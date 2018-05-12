@@ -133,6 +133,10 @@ import stochastic_lda as slda
 # this has already been done by downloading the code from the github page
 # and translating it into Py3 using lib2to3
     
+from sklearn import 
+
+# Since this doesn't really seem to be working, we'll try it with
+# sklearn instead
 
 if __name__ == '__main__':
     names = findFacultyMembers()
@@ -148,32 +152,56 @@ if __name__ == '__main__':
     vocab = dict(collections.Counter(nltk.word_tokenize(' '.join(docs))))
     
     # Set the parameters and run the function
+    # This doesn't work for some reason, might be python 2 to 3 conversion
+    # problem. So code below is commented out and trying it with sklearn
     
-    iterations = int(len(docs))
-    k = 5
+    from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+    from sklearn.decomposition import NMF, LatentDirichletAllocation
+    
+    no_features = 1000
+    no_topics = 5
+    
+    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=no_features, stop_words='english')
+    tf = tf_vectorizer.fit_transform(docs)
+    tf_feature_names = tf_vectorizer.get_feature_names()
+    
+    # Run the LDA
+    lda = LatentDirichletAllocation(n_topics=no_topics, max_iter=5, learning_method='online', learning_offset=50.,random_state=0).fit(tf)
+    
+    def display_topics(model, feature_names, no_top_words):
+        for topic_idx, topic in enumerate(model.components_):
+            print('Topic %d:' % (topic_idx))
+            print(' '.join([feature_names[i] for i in topic.argsort()[:-no_top_words - 1:-1]]))
 
-    testset = slda.SVILDA(vocab = vocab, K = k, D = len(docs), alpha = 0.2, eta = 0.2, tau = 1024, kappa = 0.7, docs = docs, iterations= iterations)
-    testset.runSVI()
-    
-    finallambda = testset._lambda
-    
-    topics, topic_probs = testset.getTopics()
-    
-    for kk in range(0, len(finallambda)):
-        lambdak = list(finallambda[kk, :])
-        lambdak = lambdak / sum(lambdak)
-        temp = list(zip(lambdak, list(range(0, len(lambdak)))))
-        temp = sorted(temp, key = lambda x: x[0], reverse=True)
-        # print temp
-        print('topic %d:' % (kk))
-        # feel free to change the "53" here to whatever fits your screen nicely.
-        for i in range(0, 10):
-            print('%20s  \t---\t  %.4f' % (list(vocab.keys())[list(vocab.values()).index(temp[i][1])], temp[i][0]))
-        print()
+    no_top_words = 10
+    display_topics(lda, tf_feature_names, no_top_words)
 
-
-    with open("temp/%i_%i_%f_raw.txt" %(k, iterations, perplexity), "w+") as f:
-        # f.write(finallambda)
-        for result in topics:
-            f.write(str(result) + " \n")
-        f.write(str(topic_probs) + " \n")
+    
+#    iterations = int(len(docs))
+#    k = 5
+#
+#    testset = slda.SVILDA(vocab = vocab, K = k, D = len(docs), alpha = 0.2, eta = 0.2, tau = 1024, kappa = 0.7, docs = docs, iterations= iterations)
+#    testset.runSVI()
+#    
+#    finallambda = testset._lambda
+#    
+#    topics, topic_probs = testset.getTopics()
+#    
+#    for kk in range(0, len(finallambda)):
+#        lambdak = list(finallambda[kk, :])
+#        lambdak = lambdak / sum(lambdak)
+#        temp = list(zip(lambdak, list(range(0, len(lambdak)))))
+#        temp = sorted(temp, key = lambda x: x[0], reverse=True)
+#        # print temp
+#        print('topic %d:' % (kk))
+#        # feel free to change the "53" here to whatever fits your screen nicely.
+#        for i in range(0, 10):
+#            print('%20s  \t---\t  %.4f' % (list(vocab.keys())[list(vocab.values()).index(temp[i][1])], temp[i][0]))
+#        print()
+#
+#    
+#    with open("temp/%i_%i_%f_raw.txt" %(k, iterations, perplexity), "w+") as f:
+#        # f.write(finallambda)
+#        for result in topics:
+#            f.write(str(result) + " \n")
+#        f.write(str(topic_probs) + " \n")
