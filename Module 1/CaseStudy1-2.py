@@ -12,10 +12,11 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
-import numpy as n
 import nltk
 from nltk.corpus import stopwords
 import collections
+import stochastic_lda as slda
+import csv
 
 #####
 ## GETTING DATA
@@ -127,16 +128,10 @@ def word_cleaning_only(s):
 # Actual data science
 ####
 
-import stochastic_lda as slda
-
 # First define the SVILDA as a class
 # this has already been done by downloading the code from the github page
 # and translating it into Py3 using lib2to3
     
-from sklearn import 
-
-# Since this doesn't really seem to be working, we'll try it with
-# sklearn instead
 
 if __name__ == '__main__':
     names = findFacultyMembers()
@@ -149,17 +144,20 @@ if __name__ == '__main__':
     # vocab : is simply all of the words in the docs
     
     docs = list(all_papers['abstract'].apply(word_cleaning_only).values)
-    vocab = dict(collections.Counter(nltk.word_tokenize(' '.join(docs))))
+    dictionary = list(collections.Counter(nltk.word_tokenize(' '.join(docs))).keys())
+    vocab = dict(zip(dictionary, range(len(dictionary))))
     
     # Set the parameters and run the function
     # This doesn't work for some reason, might be python 2 to 3 conversion
     # problem. So code below is commented out and trying it with sklearn
     
-    from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-    from sklearn.decomposition import NMF, LatentDirichletAllocation
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.decomposition import LatentDirichletAllocation
     
     no_features = 1000
     no_topics = 5
+    
+    # Make word vectorizer
     
     tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=no_features, stop_words='english')
     tf = tf_vectorizer.fit_transform(docs)
@@ -175,33 +173,61 @@ if __name__ == '__main__':
 
     no_top_words = 10
     display_topics(lda, tf_feature_names, no_top_words)
+    
+    ## Original code...
+    # Now with the original code again, now works
+    
+    # Defined heldoutdocs as a the test part of the docs
+    # test = 30 %
+    # train = 70 %
+    
+    from random import shuffle
+    import copy
+    
+    test, train = 0.3, 0.7
+    
+    heldoutdocs = copy.deepcopy(docs)
+    shuffle(heldoutdocs)
+    docs_train = [heldoutdocs.pop() for i in range(round(train*len(docs)))]
+    
+    iterations = int(len(docs_train))
+    k = 5
+    
+    testset = slda.SVILDA(vocab = vocab, K = k, D = len(docs_train), alpha = 0.2, eta = 0.2, tau = 1024, kappa = 0.7, docs = docs_train, iterations= iterations)
+    testset.runSVI()
+    
+    finallambda = testset._lambda
+    
+    perplexity = testset.calcPerplexity(docs = heldoutdocs)
+    with open("temp/%i_%i_%f_results.csv" %(k, iterations, perplexity), "w+") as f:
+        writer = csv.writer(f)
+        for i in range(k):
+            bestwords = sorted(list(range(len(finallambda[i]))), key=lambda j:finallambda[i, j])
+            # print bestwords
+            bestwords.reverse()
+            writer.writerow([i])
+            for j, word in enumerate(bestwords):
+                writer.writerow([word, list(vocab.keys())[list(vocab.values()).index(word)]])
+                if j >= 15:
+                    break
+    topics, topic_probs = testset.getTopics()
+    testset.plotTopics(perplexity)
+        
+    for kk in range(0, len(finallambda)):
+        lambdak = list(finallambda[kk, :])
+        lambdak = lambdak / sum(lambdak)
+        temp = list(zip(lambdak, list(range(0, len(lambdak)))))
+        temp = sorted(temp, key = lambda x: x[0], reverse=True)
+        # print temp
+        print('topic %d:' % (kk))
+        # feel free to change the "53" here to whatever fits your screen nicely.
+        for i in range(0, 10):
+            print('%20s  \t---\t  %.4f' % (list(vocab.keys())[list(vocab.values()).index(temp[i][1])], temp[i][0]))
+        print()
 
     
-#    iterations = int(len(docs))
-#    k = 5
-#
-#    testset = slda.SVILDA(vocab = vocab, K = k, D = len(docs), alpha = 0.2, eta = 0.2, tau = 1024, kappa = 0.7, docs = docs, iterations= iterations)
-#    testset.runSVI()
-#    
-#    finallambda = testset._lambda
-#    
-#    topics, topic_probs = testset.getTopics()
-#    
-#    for kk in range(0, len(finallambda)):
-#        lambdak = list(finallambda[kk, :])
-#        lambdak = lambdak / sum(lambdak)
-#        temp = list(zip(lambdak, list(range(0, len(lambdak)))))
-#        temp = sorted(temp, key = lambda x: x[0], reverse=True)
-#        # print temp
-#        print('topic %d:' % (kk))
-#        # feel free to change the "53" here to whatever fits your screen nicely.
-#        for i in range(0, 10):
-#            print('%20s  \t---\t  %.4f' % (list(vocab.keys())[list(vocab.values()).index(temp[i][1])], temp[i][0]))
-#        print()
-#
-#    
-#    with open("temp/%i_%i_%f_raw.txt" %(k, iterations, perplexity), "w+") as f:
-#        # f.write(finallambda)
-#        for result in topics:
-#            f.write(str(result) + " \n")
-#        f.write(str(topic_probs) + " \n")
+    with open("temp/%i_%i_%f_raw.txt" %(k, iterations, perplexity), "w+") as f:
+        # f.write(finallambda)
+        for result in topics:
+            f.write(str(result) + " \n")
+        f.write(str(topic_probs) + " \n")
