@@ -1,0 +1,19 @@
+A little more than three years ago, Apple announced a new MacBook with a "butterfly" keyboard that was 40 percent thinner and ostensibly four times more stable than the previous "scissor" mechanism that MacBooks employed.
+
+The promise was to more evenly distribute pressure on each key. Not everyone loved this "reinvention," however, and now, Apple is facing a class action lawsuit over it.
+
+According to a complaint lodged in the Northern District Court of California yesterday and first spied by the folks over at AppleInsider, "thousands" of MacBook and MacBook Pro laptops produced in 2015 and 2016 experienced failure owing to dust or debris the Butterly design that rendered the machines useless. The complaint further alleges that Apple "continues to fail to disclose to consumers that the MacBook is defective, including when consumers bring their failed laptops into the 'Genius Bar' (the in-store support desk) at Apple stores to request technical support."
+
+It just not a lack of disclosures at the outset that's problematic, the suit continues. Customers who think the issue will be covered by their warranties are sometimes in for an unpleasant surprise. As stated in the filing: "Although every MacBook comes with a one-year written warranty, Apple routinely refuses to honor its warranty obligations. Instead of fixing the keyboard problems, Apple advises MacBook owners to try self-help remedies that it knows will not result in a permanent repair. When Apple does agree to attempt a warranty repair, the repair is only temporary—a purportedly repaired MacBook fails again from the same keyboard problems. For consumers outside of the warranty period, Apple denies warranty service, and directs consumers to engage in paid repairs, which cost between $400 and $700. The keyboard defect in the MacBook is substantially certain to manifest."
+
+The lawsuit was filed on behalf of two users, ZIxuan Rao and Kyle Barbaro and more broadly "on behalf of all others similarly situated." It was brought by Girard Gibbs, a San Francisco-based law firm, which has battled with Apple numerous times in the past, including filing a class-action suit centered on the iPod's "diminishing battery capacity." (Apple appears to have settled that one.)
+
+We've reached out to Apple for comment.
+
+Interestingly, AppleInsider appears to have provided the fodder for this new lawsuit, or some of it at least. Last month, the outlet reported findings of its own separate investigation into the problem after hearing enough anecdotes to support a deep dive. It says that after collecting service data for the first year of release for the 2014, 2015, and 2016 MacBook Pros, it concluded that -- excluding Touch Bar failures -- the 2016 MacBook Pro keyboard has been failing its users twice as often in the first year of use as the 2014 or 2015 MacBook Pro models.
+
+AppleInsider says it collected its data from "assorted Apple Genius Bars in the U.S." that it has worked with for several years, as well as Apple-authorized third-party repair shops.
+
+The investigation clearly resonated with MacBook owners, because soon after, more than 17,000 people signed a Change.org petition demanding that Apple recall all MacBooks with butterfly switch keyboards.
+
+That petition -- which cites among others the highly regarded writer and UI designer John Gruber, who has called the keyboard "one of the biggest design screwups in Apple history" -- is gaining steam again today, presumably fueled by this new lawsuit. As of this writing, roughly 18,000 people have provided their signature.

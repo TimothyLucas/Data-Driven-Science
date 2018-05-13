@@ -1,0 +1,11 @@
+Credit card processors are mostly responsible for data transmission and security when you use your card at a store or online to make a purchase.
+
+There are two types of processors in the payment-card system. Front-end processors route transactions from merchants to the cardholder's bank to gain authorization; that is, they make sure a customer has enough available credit or funds to make a purchase. Back-end processors are responsible for a fund's settlement, which ends with the merchant receiving a deposit for transactions.
+
+Below, we've outlined the major players in credit card processing and described their major strengths.
+
+These card processors handle so much volume and so many dollars every day, but they are still just one piece of the larger payments ecosystem, which includes issuers, merchants, and more.
+
+That's why Business Insider Intelligence spent months putting together the greatest and most exhaustive guide on the world of payments entitled The Payments Ecosystem Report: Everything You Need to Know About The Next Era of Payment Processing.
+
+NOW WATCH: How socially responsible investing can help you avoid catastrophic drops within your portfolio

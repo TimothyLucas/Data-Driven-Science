@@ -1,0 +1,7 @@
+Apple has faced some pointed criticism over the butterfly switch keyboards on the 12-inch MacBook and current-generation MacBook Pro. Whether or not you like the tactile feel, they're sensitive to crumbs and dust -- and since you can't just remove individual keys, fixes are both elaborate and (if you're out of warranty) very expensive. To that end, users Kyle Barbaro and Zixua Rao have filed a class action lawsuit against Apple accusing the company of knowingly selling MacBooks with faulty keyboards.
+
+Barbaro and Rao assert that Apple must have known the keyboards were "defective" by the time they reached the public, since complaints started mounting soon after the original 12-inch MacBook launched in 2015. It also accuses Apple of suggesting "self-help remedies" (such as blasting the keyboard with compressed air) that it supposedly knows won't work, and noted that repairs haven't offered permanent solutions.
+
+The lawsuit asks for both damages and refunds for anyone who has paid to replace their MacBook's keyboard.
+
+We've asked Apple if it can comment on the lawsuit. However, the company filed for a patent on a dust-resistant butterfly switch keyboard back in 2016. It may have difficulty arguing that it was unaware of the issue until more recently, even if an immediate fix wasn't in sight.
