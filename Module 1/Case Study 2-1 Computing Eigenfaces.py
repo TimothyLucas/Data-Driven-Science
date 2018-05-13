@@ -22,16 +22,12 @@ def loadFaces(path):
     
     # Use a dict to store everything in the end
     all_faces = dict()
-    
-    # for the plotting setup
-    fig=plt.figure(figsize=(16, 16))
-    l = np.round(np.sqrt(N))
-    columns, rows = l, l
-    
+    S = []
+
     for i in range(N):
         im = Image.open(files[i])
         # convert to grayscale
-        im = im.convert('LA')
+        im = im.convert('L')
         # make sure it's the right size
         if im.size != (300, 300):
             size = (300, 300)
@@ -39,11 +35,48 @@ def loadFaces(path):
         
         all_faces[i] = im
         
-        fig.add_subplot(rows, columns, i)
-        plt.imshow(img)
+        im_raw = np.asarray(im)
+        irow, icol = im_raw.shape
         
+        # Reshape and add to the main matrix
+        
+        temp = np.reshape(im_raw, irow*icol, 1)
+        S.append(temp)
     
+    return S, all_faces
+
+def normalizeImages(S):
+    for i in range(len(S)):
+        temp = S[i]
+        m = np.mean(temp)
+        st = np.std(temp)
+        norm = (temp-m)*st/(st+m)
+        S[i] = norm
+        
+    return S
+        
+def showNormImages(S):
+    for i in range(len(S)):
+        img_norm = np.reshape(S[i], (300,300))
+        # Show the image
+        plt.imshow(img_norm.T)
+        
+def computeAverageFace(S):
+    # Convert S to appropriate matrix form
     
+    S_f = np.array(S)
+    m = np.mean(S_f, axis = 0)
+    
+    # don't know yet how to do the 'convert to u8bit'
+    
+    img_avg = np.reshape(m, (300,300))
+    plt.imshow(img_avg.T)
+    
+    return m
+
+def computeEigenFaces()
+    
+        
 
 if __name__ == '__main__':
     
@@ -53,3 +86,4 @@ if __name__ == '__main__':
     
     # Now load the faces
     
+    S, all_faces = loadFaces(faces_path)
