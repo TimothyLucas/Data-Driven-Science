@@ -28,7 +28,7 @@ def convertImageToU8bit(input_img):
 def loadFaces(path):
     # Number of faces
     os.chdir(path)
-    files = [f for f in os.listdir(path) if ('jpg' in f)]
+    files = [f for f in os.listdir(path) if (('jpg' in f) | ('png' in f) ) & ('eigen' not in f)]
     N = len(files)
     
     # Use a dict to store everything in the end
@@ -156,7 +156,7 @@ def computeEigenFaces(S, show_images = False):
     
     return u, EigenFaces
 
-def classifyNewFaces(S, u, input_image = '1.jpg', show_images = True):
+def classifyNewFaces(S, u, input_image = '4.jpg', show_images = True):
     # Find the weight of each face for each image in the training set.
     # omega will store this information for the training set.
     omega = []
@@ -206,18 +206,8 @@ def classifyNewFaces(S, u, input_image = '1.jpg', show_images = True):
         WeightOfInputImage = np.dot(t,Difference.T)
         InImWeight.append(WeightOfInputImage)
     
-    # Find distance
-    e=[]
-    for i in range(len(omega)):
-        q = omega[i]
-        DiffWeight = InImWeight-q
-        mag = np.linalg.norm(DiffWeight)
-        e.append(mag)
-
-    kk = list(range(len(e)))
-    
-#    ll = 1:M;
-#    stem(ll,InImWeight)
+    plt.stem(list(range(len(S))),InImWeight)
+    plt.title('weights of different images')
     
     return None
         
@@ -238,6 +228,6 @@ if __name__ == '__main__':
     # Compute eigen faces
     u, eigen_faces = computeEigenFaces(S, show_images = False)
     # Now compute the reconstructed face
-    classifyNewFaces(S, u, input_image = '1.jpg', show_images = True)
+    classifyNewFaces(S, u, input_image = '4.jpg', show_images = True)
     
     
