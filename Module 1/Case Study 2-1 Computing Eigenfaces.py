@@ -6,11 +6,15 @@ Created on Sun May 13 12:57:17 2018
 @author: timothylucas
 """
 
+## Disclaimer: this script is pretty much a direct port of the M file
+## and so quite unpythonic, I'll work on that hopefully later
+
 import numpy as np
 import os
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import copy
 
 ## Preprocessing and visualising the dataset
 
@@ -70,13 +74,86 @@ def computeAverageFace(S):
     # don't know yet how to do the 'convert to u8bit'
     
     img_avg = np.reshape(m, (300,300))
-    plt.imshow(img_avg.T)
+    # Scale the image
+    img_avg -= np.min(img_avg)
+    img_avg *= (255.0/img_avg.max())
+    # plot 
+    im = Image.fromarray(img_avg.T)
+    im.convert('RGB')
+    im.show()
     
     return m
-
-def computeEigenFaces()
     
+def computeEigenFaces(S, show_images = False):
+    dbx = np.array(S)
+    A = dbx.T # Note that the dbx here is transposed as compared to the 
+              # original M script
+    
+    A_t = copy.deepcopy(A)
+    A_t = A_t.T
+    
+    L = np.matmul(A_t, A) #Is this the correct order?
+    
+    dd, vv = np.linalg.eig(L) #Order here reversed from MATLAB
+    # dd : eigenvalues
+    # vv : eigenvectors
+    # from the docs:
+    # The normalized (unit “length”) eigenvectors, such that the column 
+    # v[:,i] is the eigenvector corresponding to the eigenvalue w[i].
+    
+    # Sort and eliminate those whose eigenvalue is zero
+    
+    nonzero_eigenvals = dd > 1e-4
+    v = vv[:,nonzero_eigenvals]
+    d = dd[nonzero_eigenvals]
+    
+    # Sort
+    # eigenvalues already sorted, but in descending order, so let's
+    # change this into ascending
+    
+    d = d[::-1]
+    v = v[:,::-1]
+    
+    # Normalization also does not need to happen anymore, already done
+    # by numpy
+    
+    # Now eigenvectors of the C matrix
+    u = []
+    for i in range(len(v)):
+        temp = np.sqrt(d[i])
+        u.append(np.matmul(dbx.T, v[:,i])/temp)
+    
+    # are the eigenvectors transposed again?    
+    
+    # Normalization of the C matrix, looks like it's already normalized 
+    # but just for the hell of it
+    for i in range(len(u)):
+        kk = u[i]
+        temp = np.sqrt(np.sum(np.square(kk)))
+        u[i] = u[i]/temp
+    
+    # Now render the eigenfaces
+    EigenFaces = []
+    
+    for i in range(len(u)):
+        img = np.reshape(u[i], (300,300))
+        img = img.T
+        # Scale the image
+        img -= np.min(img)
+        img *= (255.0/img.max())
+        # convert and save
+        im = Image.fromarray(img)
+        im.convert('RGB').save('eigen_{}.jpeg'.format(i+1))
+        if show_images:
+            im.show()
         
+        EigenFaces.append(img)
+    
+    return EigenFaces
+
+def classifyNewFaces():
+    
+    return None 
 
 if __name__ == '__main__':
     
@@ -87,3 +164,7 @@ if __name__ == '__main__':
     # Now load the faces
     
     S, all_faces = loadFaces(faces_path)
+
+    S = normalizeImages(S)
+    avg_face = computeAverageFace(S)
+    eigen_faces = computeEigenFaces(S, show_images = False)
