@@ -13,10 +13,17 @@ import numpy as np
 import os
 from PIL import Image
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import copy
 
 ## Preprocessing and visualising the dataset
+
+def convertImageToU8bit(input_img):
+    # assumes input array that can be represented 
+    # as an image, needs to be scaled to a [0, 255]
+    # range, which is what this function returns
+    input_img -= np.min(input_img)
+    input_img *= (255.0/input_img.max())
+    return input_img
 
 def loadFaces(path):
     # Number of faces
@@ -75,8 +82,7 @@ def computeAverageFace(S):
     
     img_avg = np.reshape(m, (300,300))
     # Scale the image
-    img_avg -= np.min(img_avg)
-    img_avg *= (255.0/img_avg.max())
+    img_avg = convertImageToU8bit(img_avg)
     # plot 
     im = Image.fromarray(img_avg.T)
     im.convert('RGB')
@@ -139,8 +145,7 @@ def computeEigenFaces(S, show_images = False):
         img = np.reshape(u[i], (300,300))
         img = img.T
         # Scale the image
-        img -= np.min(img)
-        img *= (255.0/img.max())
+        img = convertImageToU8bit(img)
         # convert and save
         im = Image.fromarray(img)
         im.convert('RGB').save('eigen_{}.jpeg'.format(i+1))
@@ -149,11 +154,73 @@ def computeEigenFaces(S, show_images = False):
         
         EigenFaces.append(img)
     
-    return EigenFaces
+    return u, EigenFaces
 
-def classifyNewFaces():
+def classifyNewFaces(S, u, input_image = '1.jpg', show_images = True):
+    # Find the weight of each face for each image in the training set.
+    # omega will store this information for the training set.
+    omega = []
+    dbx = np.array(S)
     
-    return None 
+    for h in range(len(dbx)):
+        WW = []
+        for i in range(len(u)):
+            t = u[i].T
+            WeightOfImage = np.dot(t, dbx.T[:,h]).T
+            WW.append(WeightOfImage)
+        omega.append(WW)
+        
+    im = Image.open(input_image)
+    InputImage = im.convert('L')
+    if show_images:
+        InputImage.show()
+    
+    im_raw = np.asarray(InputImage)
+    InImage = np.reshape(im_raw.T,im_raw.shape[0]*im_raw.shape[1],1)
+    temp = InImage
+    me=np.mean(temp)
+    st=np.std(temp)
+    temp=(temp-me)*st/(st+me)
+    Difference = temp
+    NormImage = temp
+    
+    p = []
+    aa = len(u)
+    for i in range(aa):
+        pare = np.dot(NormImage, u[i])
+        p.append(pare)
+        
+    #m is the mean image, u is the eigenvector
+    ReshapedImage = me + np.matmul(np.array(u).T, p)
+    ReshapedImage = np.reshape(ReshapedImage,im_raw.shape)
+    ReshapedImage = ReshapedImage.T
+    # Show the reconstructed image.
+    if show_images:
+        ReshapedImage_s = convertImageToU8bit(ReshapedImage)
+        ReshapedImage_s = Image.fromarray(ReshapedImage_s)
+        ReshapedImage_s.show()
+    # Compute the weights of the eigenfaces in the new image
+    InImWeight = [];
+    for i in range(len(u)):
+        t = u[i]
+        WeightOfInputImage = np.dot(t,Difference.T)
+        InImWeight.append(WeightOfInputImage)
+    
+    # Find distance
+    e=[]
+    for i in range(len(omega)):
+        q = omega[i]
+        DiffWeight = InImWeight-q
+        mag = np.linalg.norm(DiffWeight)
+        e.append(mag)
+
+    kk = list(range(len(e)))
+    
+#    ll = 1:M;
+#    stem(ll,InImWeight)
+    
+    return None
+        
 
 if __name__ == '__main__':
     
@@ -164,7 +231,13 @@ if __name__ == '__main__':
     # Now load the faces
     
     S, all_faces = loadFaces(faces_path)
-
+    # Normalize
     S = normalizeImages(S)
+    # Compute average face
     avg_face = computeAverageFace(S)
-    eigen_faces = computeEigenFaces(S, show_images = False)
+    # Compute eigen faces
+    u, eigen_faces = computeEigenFaces(S, show_images = False)
+    # Now compute the reconstructed face
+    classifyNewFaces(S, u, input_image = '1.jpg', show_images = True)
+    
+    
