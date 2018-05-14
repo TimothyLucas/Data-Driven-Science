@@ -181,7 +181,7 @@ def classifyNewFaces(S, u, input_image = '4.jpg', show_images = True):
     me=np.mean(temp)
     st=np.std(temp)
     temp=(temp-me)*st/(st+me)
-    Difference = temp
+    Difference = temp-np.mean(np.array(S).T)
     NormImage = temp
     
     p = []
