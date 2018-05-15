@@ -156,7 +156,7 @@ def computeEigenFaces(S, show_images = False):
     
     return u, EigenFaces
 
-def classifyNewFaces(S, u, input_image = '4.jpg', show_images = True):
+def classifyNewFaces(S, u, mean_face, input_image = '4.jpg', show_images = True):
     # Find the weight of each face for each image in the training set.
     # omega will store this information for the training set.
     omega = []
@@ -181,7 +181,7 @@ def classifyNewFaces(S, u, input_image = '4.jpg', show_images = True):
     me=np.mean(temp)
     st=np.std(temp)
     temp=(temp-me)*st/(st+me)
-    Difference = temp-np.mean(np.array(S).T)
+    Difference = temp-mean_face
     NormImage = temp
     
     p = []
@@ -191,7 +191,7 @@ def classifyNewFaces(S, u, input_image = '4.jpg', show_images = True):
         p.append(pare)
         
     #m is the mean image, u is the eigenvector
-    ReshapedImage = me + np.matmul(np.array(u).T, p)
+    ReshapedImage = mean_face + np.matmul(np.array(u).T, p)
     ReshapedImage = np.reshape(ReshapedImage,im_raw.shape)
     ReshapedImage = ReshapedImage.T
     # Show the reconstructed image.
@@ -209,9 +209,8 @@ def classifyNewFaces(S, u, input_image = '4.jpg', show_images = True):
     plt.stem(list(range(len(S))),InImWeight)
     plt.title('weights of different images')
     
-    return None
+    return p
         
-
 if __name__ == '__main__':
     
     # set correct directory
@@ -228,6 +227,10 @@ if __name__ == '__main__':
     # Compute eigen faces
     u, eigen_faces = computeEigenFaces(S, show_images = False)
     # Now compute the reconstructed face
-    classifyNewFaces(S, u, input_image = '4.jpg', show_images = True)
+    p = classifyNewFaces(S, u, avg_face, input_image = '4.jpg', show_images = True)
     
-    
+    # Why this might not work as expected, see following documentation:
+    # https://www.learnopencv.com/face-reconstruction-using-eigenfaces-cpp-python/
+    # https://wellecks.wordpress.com/tag/eigenfaces/
+    # Possibility for extra faces to train:
+    # https://www.researchgate.net/post/Which_is_the_best_source_to_get_the_free_face_database
