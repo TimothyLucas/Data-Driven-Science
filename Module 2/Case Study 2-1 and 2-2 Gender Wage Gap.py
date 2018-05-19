@@ -175,6 +175,7 @@ print(results_wg)
 # biggest boost to wage is (still) a college degree, so hope that one is paying
 # off for you :)
 
-
+# Would also be interesting to see how the wages differ per region, and
+# so on, but that is for another time...
 
 
