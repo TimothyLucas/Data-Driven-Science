@@ -7,9 +7,6 @@ Created on Sat May 19 15:05:40 2018
 """
 
 import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error
 from patsy import dmatrices
 import numpy as np
 import statsmodels.api as sm
@@ -21,6 +18,7 @@ def bootstrap_conf_interval():
     # Theory on bootstrap: https://phe.rockefeller.edu/LogletLab/whitepaper/node17.html
     # Implementation in Python (with leastsquares, see highest voted answer): https://stackoverflow.com/questions/14581358/getting-standard-errors-on-fitted-parameters-using-the-optimize-leastsq-method-i
 #    return std_error
+    return None
 
 ###
 # Load data
