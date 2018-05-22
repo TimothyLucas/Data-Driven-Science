@@ -168,6 +168,47 @@ print(results_wg)
 # As can be seen, the same results are obtained here as compared to the R script
 
 ###
+# Partialling out
+###
+
+# So let's now do the partialling out
+
+# First the formulas
+
+fmla2_y = 'wage ~  (sc+ cg+ mw + so + we + exp1 + exp2 + exp3)**2'
+fmla2_d = 'female ~ (sc+ cg+ mw + so + we + exp1 + exp2 + exp3)**2'
+
+# Generate the matrices
+
+y_y, X_y = dmatrices(fmla2_y, data)
+y_d, X_d = dmatrices(fmla2_d, data)
+
+# Fit and obtain the residuals
+
+X2_y = sm.add_constant(X_y)
+model_y = sm.OLS(y_y, X2_y)
+est_y = model_y.fit()
+res_y = np.concatenate(y_y) - est_y.fittedvalues
+
+X2_d = sm.add_constant(X_d)
+model_d = sm.OLS(y_d, X2_d)
+est_d = model_d.fit()
+res_d = np.concatenate(y_d) - est_d.fittedvalues
+
+# Now for the partialling out, results are the same as with R, so that
+# is great!
+
+df_partial_out = pd.DataFrame(columns = ['res_y', 'res_d'],\
+                              data = np.transpose([res_y, res_d]))
+partial_y, partial_X =  dmatrices('res_y ~ res_d', df_partial_out)
+
+X2_partial = sm.add_constant(partial_X)
+model_partial = sm.OLS(partial_y, X2_partial)
+est_partial_ols = model_partial.fit()
+
+est_partial_ols.summary()
+
+###
 # Other notes
 ###
 
